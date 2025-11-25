@@ -1,6 +1,5 @@
 package cs.vsb.domain;
 
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

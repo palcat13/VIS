@@ -3,9 +3,8 @@ package cs.vsb.web;
 import cs.vsb.db.DatabaseInitializer;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
-import jakarta.servlet.annotation.WebListener;
 
-@WebListener
+@jakarta.servlet.annotation.WebListener
 public class WebListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {

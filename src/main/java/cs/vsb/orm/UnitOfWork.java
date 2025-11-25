@@ -2,8 +2,6 @@ package cs.vsb.orm;
 
 import cs.vsb.domain.*;
 import cs.vsb.service.*;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Persistence;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
