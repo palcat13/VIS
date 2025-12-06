@@ -1,13 +1,15 @@
 package cs.vsb.console;
 
-import cs.vsb.domain.User;
-import cs.vsb.orm.UnitOfWork;
+import com.vaadin.flow.component.Component;
+import cs.vsb.domain.Race;
+import cs.vsb.domain.RaceEntry;
 
-import java.sql.SQLException;
+import java.util.List;
 
-public interface UserActionStrategy  {
+public interface UserActionStrategy {
+    // Renders the main dashboard (MainView)
+    Component renderDashboard();
 
-    void displayMenu();
-
-    void handleChoice(UnitOfWork uow, User currentUser) throws SQLException;
+    // Renders the detail view for a specific race (RaceDetailView)
+    Component renderRaceDetail(Race race, List<RaceEntry> entries);
 }

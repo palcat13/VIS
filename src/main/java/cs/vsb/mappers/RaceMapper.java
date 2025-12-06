@@ -1,5 +1,6 @@
 package cs.vsb.mappers;
 
+import cs.vsb.orm.RaceProxy;
 import cs.vsb.value.Location;
 import cs.vsb.domain.Race;
 import cs.vsb.domain.Organizer;
@@ -45,18 +46,19 @@ public class RaceMapper {
     }
 
     public void insert(Race race) throws SQLException {
-        String sql = "INSERT INTO r_race (name, city,country, date, organizer_id) VALUES (?, ?,?, ?, ?)";
+        String sql = "INSERT INTO r_race (name, city,country, date,fee, organizer_id,published) VALUES (?, ?,?, ?,?, ?,?)";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, race.getName());
             stmt.setString(2, race.getLocation().getCity());
             stmt.setString(3,race.getLocation().getCountry());
-            stmt.setDate(3, Date.valueOf(race.getDate()));
-            stmt.setLong(4, race.getOrganizer() != null ? race.getOrganizer().getId() : 0); // Organizer → ID
+            stmt.setDate(4, Date.valueOf(race.getDate()));
+            stmt.setDouble(5, race.getEntryFee());
+            stmt.setLong(6, race.getOrganizer() != null ? race.getOrganizer().getId() : 0);
+            stmt.setBoolean(7, race.isPublished());
 
             stmt.executeUpdate();
 
-            // Set generated ID back to domain object
             ResultSet keys = stmt.getGeneratedKeys();
             if (keys.next()) {
                 race.setId(keys.getLong(1));
@@ -65,15 +67,17 @@ public class RaceMapper {
     }
 
     public void update(Race race) throws SQLException {
-        String sql = "UPDATE r_race SET name = ?, city = ?,country = ?, date = ?, organizer_id = ? WHERE id = ?";
+        String sql = "UPDATE r_race SET name = ?, city = ?,country = ?, date = ?, fee = ? ,organizer_id = ?, published = ? WHERE id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, race.getName());
             stmt.setString(2, race.getLocation().getCity());
             stmt.setString(3, race.getLocation().getCountry());
             stmt.setDate(4, Date.valueOf(race.getDate()));
-            stmt.setLong(5, race.getOrganizer().getId());
-            stmt.setLong(6, race.getId());
+            stmt.setDouble(5, race.getEntryFee());
+            stmt.setLong(6, race.getOrganizer().getId());
+            stmt.setBoolean(7, race.isPublished());
+            stmt.setLong(8, race.getId());
 
             stmt.executeUpdate();
         }
@@ -89,14 +93,16 @@ public class RaceMapper {
 
     private Race mapRow(ResultSet rs) throws SQLException {
         Long userID = rs.getLong("organizer_id");
-        Organizer organizer = (Organizer) userMapper.findById(userID);
 
-        return new Race(
+        return new RaceProxy(
                 rs.getLong("id"),
                 rs.getString("name"),
                 new Location(rs.getString("city"), rs.getString("country")),
                 rs.getDate("date").toLocalDate(),
-                organizer
+                userID,
+                rs.getDouble("fee"),
+                rs.getBoolean("published"),
+                userMapper
         );
     }
 }

@@ -1,6 +1,11 @@
 package cs.vsb.domain;
 
+import cs.vsb.service.RaceEntryService;
+import cs.vsb.service.RaceService;
+import cs.vsb.service.RacerService;
 import lombok.*;
+
+import java.sql.SQLException;
 
 @Getter
 @Setter
@@ -22,6 +27,15 @@ public class Participant extends User {
     @Override
     public void validate(){
         super.validate();
+    }
+
+    public void registerToRace(Race race,Racer racer) throws SQLException {
+        if(this.racer == null) {
+            RacerService racerService = new RacerService();
+            this.racer = racerService.createRacer(racer);
+        }
+        RaceEntryService raceEntryService = new RaceEntryService();
+        raceEntryService.createRaceEntry(new RaceEntry(race,this.racer,0));
     }
 
 

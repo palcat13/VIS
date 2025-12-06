@@ -70,6 +70,19 @@ public class RaceEntryMapper {
         return null;
     }
 
+    public List<RaceEntry> findByRaceId(Long raceId) throws SQLException {
+        String sql = "SELECT * FROM r_race_entry WHERE race_id = ?";
+        List<RaceEntry> entries = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, raceId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                entries.add(mapRow(rs));
+            }
+        }
+        return entries;
+    }
+
     public List<RaceEntry> findAll() throws SQLException {
         String sql = "SELECT * FROM r_race_entry";
         List<RaceEntry> entries = new ArrayList<>();

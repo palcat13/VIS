@@ -3,6 +3,7 @@ package cs.vsb.service;
 import cs.vsb.db.ConnectionManager;
 import cs.vsb.domain.RaceEntry;
 import cs.vsb.mappers.RaceEntryMapper;
+import cs.vsb.mappers.ResultJsonExportMapper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,15 +11,17 @@ import java.util.List;
 
 public class RaceEntryService {
 
-    private final RaceEntryMapper mapper;
+    private final RaceEntryMapper sqlMapper;
+    private final ResultJsonExportMapper jsonMapper;
 
     public RaceEntryService() throws SQLException {
         Connection connection = ConnectionManager.getConnection();
-        this.mapper = new RaceEntryMapper(connection);
+        this.sqlMapper = new RaceEntryMapper(connection);
+        this.jsonMapper = new ResultJsonExportMapper();
     }
 
     public RaceEntry createRaceEntry(RaceEntry entry) throws SQLException {
-        mapper.insert(entry);
+        sqlMapper.insert(entry);
         return entry;
     }
 
@@ -26,18 +29,27 @@ public class RaceEntryService {
         if (entry.getId() == null) {
             throw new IllegalArgumentException("RaceEntry ID cannot be null for update.");
         }
-        mapper.update(entry);
+        sqlMapper.update(entry);
     }
 
     public void deleteRaceEntry(Long id) throws SQLException {
-        mapper.delete(id);
+        sqlMapper.delete(id);
     }
 
     public RaceEntry getRaceEntry(Long id) throws SQLException {
-        return mapper.findById(id);
+        return sqlMapper.findById(id);
     }
 
     public List<RaceEntry> getAllRaceEntries() throws SQLException {
-        return mapper.findAll();
+        return sqlMapper.findAll();
+    }
+
+
+    public String getRaceResultsAsJson(Long raceId) throws SQLException {
+        List<RaceEntry> entries = sqlMapper.findByRaceId(raceId);
+        if (entries.isEmpty()) {
+            return "[]"; // Return empty JSON array if no entries
+        }
+        return jsonMapper.generateJsonString(entries);
     }
 }

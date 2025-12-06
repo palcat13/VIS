@@ -56,9 +56,12 @@ public class DatabaseInitializer {
                 CREATE TABLE IF NOT EXISTS r_race (
                     id BIGINT PRIMARY KEY AUTO_INCREMENT,
                     name VARCHAR(100) NOT NULL,
-                    location VARCHAR(100),
+                    city VARCHAR(100),
+                    country VARCHAR(100),
                     date DATE NOT NULL,
+                    fee DOUBLE NOT NULL,
                     organizer_id BIGINT,
+                    published BOOLEAN NOT NULL,
                     FOREIGN KEY (organizer_id) REFERENCES r_user(id)
                 );
                 """);
@@ -74,6 +77,18 @@ public class DatabaseInitializer {
                     place INT,
                     FOREIGN KEY (race_id) REFERENCES r_race(id),
                     FOREIGN KEY (racer_id) REFERENCES r_racer(id)
+                );
+                """);
+
+            stmt.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS r_payment (
+                    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                    race_id BIGINT NOT NULL,
+                    participant_id BIGINT NOT NULL,
+                    paid BOOLEAN NOT NULL,
+                    payment_date DATE NOT NULL,
+                    FOREIGN KEY (race_id) REFERENCES r_race(id),
+                    FOREIGN KEY (participant_id) REFERENCES r_user(id)
                 );
                 """);
 

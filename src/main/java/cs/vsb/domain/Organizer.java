@@ -29,6 +29,12 @@ public class Organizer extends User {
         races.add(race);
     }
 
+    public void publishRace(Race race){
+        if(races.contains(race)){
+            race.setPublished(true);
+        }
+    }
+
     @Override
     public void validate(){
         super.validate();

@@ -1,6 +1,9 @@
 package cs.vsb.domain;
 
+import cs.vsb.service.RaceEntryService;
 import lombok.*;
+
+import java.sql.SQLException;
 
 @Getter
 @Setter
@@ -22,6 +25,12 @@ public class Timekeeper extends User {
     @Override
     public void validate() {
         super.validate();
+    }
+
+    public void addTime(RaceEntry entry, long raceTime ) throws SQLException {
+        RaceEntryService raceEntryService = new RaceEntryService();
+        entry.setRaceTime(raceTime);
+        raceEntryService.updateRaceEntry(entry);
     }
 
     @Override

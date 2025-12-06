@@ -2,6 +2,7 @@ package cs.vsb.mappers;
 
 import cs.vsb.domain.Racer;
 import cs.vsb.domain.Category;
+import cs.vsb.orm.RacerProxy;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -96,15 +97,16 @@ public class RacerMapper {
         String gender = rs.getString("gender");
 
         Long categoryId = rs.getLong("category_id");
-        Category category = null;
         if (!rs.wasNull()) {
-            category = categoryMapper.findById(categoryId);
+            categoryId = null;
         }
 
-        Racer racer = new Racer(fname, lname, birthYear, gender);
-        racer.setId(id);
-        racer.setCategory(category);
-
-        return racer;
+        if (categoryId != null) {
+            return new RacerProxy(id, fname, lname, birthYear, gender, categoryId, categoryMapper);
+        } else {
+            Racer racer = new Racer(id, fname, lname, birthYear, gender);
+            racer.setCategory(null);
+            return racer;
+        }
     }
 }

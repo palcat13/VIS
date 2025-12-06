@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import static cs.vsb.db.PasswordUtils.hashPassword;
+
 public class UserService {
 
     private final UserMapper userMapper;
@@ -37,10 +39,17 @@ public class UserService {
         if (user == null) {
             throw new IllegalArgumentException("Username or password is incorrect.");
         }
-        if(!userMapper.verifyPassword(user, password)) {
+        if(!verifyPassword(user, password)) {
             throw new IllegalArgumentException("Incorrect password.");
         }
         return user;
+    }
+
+    public boolean verifyPassword(User user, String inputPassword) throws SQLException {
+        String storedSalt = userMapper.getSaltForUser(user.getId());
+        String storedHash = user.getPassword();
+        String inputHash = hashPassword(inputPassword, storedSalt);
+        return storedHash.equals(inputHash);
     }
 
     public void deleteUser(Long id) throws SQLException {
